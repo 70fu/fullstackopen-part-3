@@ -66,6 +66,14 @@ app.post('/api/persons', (request, response)=>{
     const body = request.body;
     console.log('post request with body ',body);
 
+    //check if body is valid
+    if(!body.name || !body.number){
+        return response.status(400).json({error:"name and number must be given"});
+    }
+    if(persons.find((p)=>p.name===body.name)){
+        return response.status(400).json({error:"name must be unique"});
+    }
+
     const person = {
         id:Math.floor(Math.random()*Number.MAX_SAFE_INTEGER),
         name:body.name,
