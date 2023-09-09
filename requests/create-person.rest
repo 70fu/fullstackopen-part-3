@@ -8,3 +8,12 @@ content-type: application/json
     "name":"Simon",
     "number":"12-3456-78989"
 }
+
+###
+POST https://fullstackopen-part-3.onrender.com/api/persons HTTP/1.1
+content-type: application/json
+
+{
+    "name":"Simon",
+    "number":"12-3456-78989"
+}
