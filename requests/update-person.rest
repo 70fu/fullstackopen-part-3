@@ -1,0 +1,10 @@
+GET http://localhost:3001/api/persons/
+
+###
+PUT http://localhost:3001/api/persons/64fc3ad4a21c0fa4f5cef78f HTTP/1.1
+content-type: application/json
+
+{
+    "name":"Derrick Germin",
+    "number":"090-4445-5554"
+}
