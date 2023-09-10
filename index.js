@@ -1,7 +1,10 @@
+//import local environment variables before doing anything
+require('dotenv').config();
 const express = require('express')
 const morgan = require('morgan');
 const cors = require('cors');
 const app = express()
+const Person = require('./models/person')
 
 app.use(cors());
 app.use(express.json());
@@ -45,32 +48,29 @@ let persons = [
     }
 ]
 
-app.get('/info', (request, response)=>{
+/*app.get('/info', (request, response)=>{
     response.send(`
         <p>Phonebook has info for ${persons.length} people</p>
         <p>${new Date().toString()}</p>
     `);
-})
+})*/
 
 app.get('/api/persons', (request, response) => {
-    response.json(persons)
+    Person.find({}).then(people=>{
+        response.json(people);
+    })
 })
 
 app.get('/api/persons/:id', (request, response)=>{
-    const id = Number(request.params.id);
-
-    const person = persons.find((p)=>p.id===id);
-
-    if(person){
+    Person.findById(request.params.id).then(person=>{
         response.json(person);
-    }
-    else{
-        response.status(404).end();
-    }
+    })
 })
 
 app.delete('/api/persons/:id', (request, response)=>{
-    const id = Number(request.params.id);
+    return response.status(501).end();
+
+    /*const id = Number(request.params.id);
 
     const person = persons.find((p)=>p.id===id);
     if(person){
@@ -78,7 +78,7 @@ app.delete('/api/persons/:id', (request, response)=>{
         response.status(204).end();
     } else{
         response.status(404).end();
-    }
+    }*/
 })
 
 app.post('/api/persons', (request, response)=>{
@@ -88,19 +88,18 @@ app.post('/api/persons', (request, response)=>{
     if(!body.name || !body.number){
         return response.status(400).json({error:"name and number must be given"});
     }
-    if(persons.find((p)=>p.name===body.name)){
+    /*if(persons.find((p)=>p.name===body.name)){
         return response.status(400).json({error:"name must be unique"});
-    }
+    }*/
 
-    const person = {
-        id:Math.floor(Math.random()*Number.MAX_SAFE_INTEGER),
+    const person = new Person({
         name:body.name,
         number:body.number
-    };
+    });
 
-    persons = persons.concat(person);
-
-    response.status(201).send(person);
+    person.save().then(savedPerson=>{
+        response.status(201).send(savedPerson);
+    });
 })
 
 const PORT = process.env.PORT || 3001
