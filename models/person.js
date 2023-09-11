@@ -4,22 +4,36 @@ const url = process.env.MONGODB_URI
 
 console.log('connecting to mongodb');
 
-mongoose.set('strictQuery',false)
+mongoose.set('strictQuery', false)
 mongoose.connect(url)
-    .then(result=>{
+    .then(result => {
         console.log('connected to MongoDB');
     })
-    .catch((error)=>{
+    .catch((error) => {
         console.log('error connecting to MongoDB:', error.message);
     })
 
 const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
+    name: {
+        type: String,
+        minLength: 3,
+        required: true
+    },
+    number: {
+        type: String,
+        minLength: 8,
+        required: [true, 'phone number required'],
+        validate:{
+            validator: (v)=>{
+                return /^\d{2,3}-\d{4,}$/.test(v);
+            },
+            message: props => `${props.value} is not a valid phone number!`
+        }
+    },
 });
 
 personSchema.set('toJSON', {
-    transform: (document, returnedObject)=>{
+    transform: (document, returnedObject) => {
         returnedObject.id = returnedObject._id.toString()
         delete returnedObject._id;
         delete returnedObject.__v;
